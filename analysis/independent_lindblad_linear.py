@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Frozen ideal-SX plus T1/T2 Lindblad comparator, independent of IBM count fitting."""
-import csv, json
+import csv
 from pathlib import Path
 import numpy as np
 from scipy.linalg import expm
@@ -32,7 +32,8 @@ def run(seq,k):
             v=(R.conj().T@rho@R).reshape(4,order="F")
     rho=v.reshape((2,2),order="F")
     return float(rho[1,1].real),float(np.trace(rho).real)
-raw=json.loads((root/"data/linear_result.json").read_text())["rows"]
+with (root/"data/linear_counts.csv").open(newline="") as f:
+    raw=[{"k":int(r["k"]),"seq":r["history"],"counts":{"1":int(r["counts_1"])}} for r in csv.DictReader(f)]
 records=[]
 for k in (20,60):
     for name,seq in (("A",[270,0,0,270]),("B",[180,0,0,0])):
